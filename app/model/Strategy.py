@@ -10,12 +10,17 @@ class TradingStrategy(ABC):
         super(TradingStrategy, self).__init__()
 
     def buy(self,price):
-        print(f"Buy: {price}")
+        # print(f"Buy: {price}")
         # self.create_order()
+        pass
     
     def sell(self,price):
-        print(f"Sell: {price}")
+        # print(f"Sell: {price}")
         # self.create_order()
+        pass
+    
+    def keep(self,price):
+        pass
 
     @abstractmethod #update must be overriden by subclasses
     def update(self,price):
