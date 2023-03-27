@@ -11,6 +11,4 @@ def GBM():
         #Expresión exacta del MBG
         y[t] = y[t-1] *  np.exp((alpha - ((sigma**2)/2))*dt + sigma*np.sqrt(dt)*Z)
 
-    date_range = pd.date_range(datetime.now(),periods=n)
-    y =  pd.Series(y,index=date_range)
-    return y
+    return pd.Series(y)
