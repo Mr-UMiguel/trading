@@ -8,11 +8,12 @@ from .Strategy import TradingStrategy
 
 class BollingerBandsStrategy(TradingStrategy):
 
-    def __init__(self,MarketData, hist_price:pd.Series,periods:int,nstd:float=2.0):
+    def __init__(self,MarketData, hist_price:pd.Series,periods:int,nstd:float=2.0,risk:float=0.01):
         assert len(hist_price) > periods, "lenght(hist_price) must be equal or grather than periods"
         self.hist_price = hist_price[:periods] # solo nos interesa los últimos periodos
         self.periods = periods
         self.nstd = nstd
+        self.risk = risk
 
 
         self.long_positions = Queue()
@@ -68,15 +69,15 @@ class BollingerBandsStrategy(TradingStrategy):
         else:
             signal = 3
 
-        if tp_short == False:
-            if price > upper_band:
-                if sl_short:
-                    signal = -2
-                else:
-                    if -1 not in self.trades[-3:]:
-                        signal = -1
-        else:
-            signal = -3
+        # if tp_short == False:
+        #     if price > upper_band:
+        #         if sl_short:
+        #             signal = -2
+        #         else:
+        #             if -1 not in self.trades[-3:]:
+        #                 signal = -1
+        # else:
+        #     signal = -3
 
         return signal
 
@@ -107,7 +108,7 @@ class BollingerBandsStrategy(TradingStrategy):
         if nlongs > 0:
             for pricet_1 in self.long_positions.queue:
                 ret = (price/pricet_1) - 1
-                if ret <= -0.1:
+                if ret <= -self.risk:
                     self.long_positions.get()
                     sl = True
                     break
@@ -122,16 +123,13 @@ class BollingerBandsStrategy(TradingStrategy):
         if nshorts > 0:
             for pricet_1 in self.short_positions.queue:
                 ret = (price/pricet_1) - 1
-                if ret >= 0.1:
+                if ret >= self.risk:
                     self.short_positions.get()
                     sl = True
                     break
         
         return sl
 
-    
-    
-    
     def calc_smsd(self,serie):
         "simple moving standard deviation"
         return serie.std()

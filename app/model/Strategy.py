@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from controller.observer import MarketData
+from controller.marketDataObserver import MarketData
 
 class TradingStrategy(ABC):
     "Strategy design pattern"

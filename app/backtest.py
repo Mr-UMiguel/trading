@@ -1,28 +1,29 @@
+from event.histData import  HistoricalMarketData
 import pandas as pd
-from datetime import datetime
 
-from controller.observer import MarketData
+from controller.marketDataObserver import MarketData
 from model.BollingerBands import BollingerBandsStrategy
-from utils.sim import GBM
+from utils.sim import GBM,OU
 from utils.performance import strategyPerfomance
 from utils.plots import *
 
-# data = pd.read_csv("./source/CHILE.csv")
 
-# data = pd.read_csv("app\source\CHILE.csv")
+def getHistData():
+    app = HistoricalMarketData()
+    app.connect("127.0.0.1", 7497, 0)
+    app.run()
+    return app
 
+histData = pd.DataFrame(getHistData().getData())
 
+prices = histData['close']
 periods = 20
-prices = GBM() ## Simulación de una serie de precios.
-# prices = data['Adj Close']
-
-print(prices)
-
 marketData = MarketData()
 strategy = BollingerBandsStrategy(
     MarketData=marketData,
     hist_price=prices,
-    periods=periods
+    periods=periods,
+    risk=0.05
 )
 
 ## simulamos el "real-time" market data
