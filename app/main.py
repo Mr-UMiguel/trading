@@ -1,12 +1,27 @@
-from event.histData import  HistoricalMarketData
-import pandas as pd
+from event.liveData import LiveMarketData
+from event.orderBuy import OrderBuy
+from threading import Thread
+import time
 
 
-def getHistData():
-    app = HistoricalMarketData()
-    app.connect("127.0.0.1", 7497, 0)
-    app.run()
-    return app
+def main():
+    # Create a new LiveMarketData object
+    marketData = LiveMarketData()
+    marketData.connect("127.0.0.1",7497, clientId=0)
+    thread1 =  Thread(target=marketData.run)
+    thread1.start()
 
-histData = pd.DataFrame(getHistData().getData())
-# histData.set_index(pd.to_datetime(histData["date"]),inplace=True,drop=True)
+    buy = OrderBuy()
+    buy.connect("127.0.0.1",7497, clientId=1)
+    contract = buy.createContract(symbol="RIO",currency="AUD")
+    order = buy.createOrder(quantity=1,lmtPrice=115.25,stopPrice=115.20)
+
+    thread2 = Thread(target=buy.sendOrder,args=(contract,order))
+    thread2.start() 
+    thread2.join()
+
+    
+
+
+if __name__ == "__main__":
+    main()
