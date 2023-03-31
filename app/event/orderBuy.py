@@ -1,4 +1,3 @@
-
 from ibapi.contract import Contract
 from ibapi.order import Order
 from typing import Literal,Optional,Union
@@ -6,8 +5,8 @@ from typing import Literal,Optional,Union
 from .Order import OrderManager
 
 class OrderBuy(OrderManager):
-    def __init__(self):
-        super(OrderBuy,self).__init__()
+    def __init__(self,contract:Contract):
+        super(OrderBuy,self).__init__(contract)
         
     
     def createContract(self,symbol:str,secType:str="STK",exchange:str="SMART",currency:str="USD") -> Order:

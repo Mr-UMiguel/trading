@@ -3,23 +3,20 @@ import numpy as np
 from queue import Queue
 
 
-
 from .Strategy import TradingStrategy
 
 class BollingerBandsStrategy(TradingStrategy):
 
-    def __init__(self,MarketData, hist_price:pd.Series,periods:int,nstd:float=2.0,risk:float=0.01):
+    def __init__(self,MarketData,Contract, hist_price:pd.Series,periods:int,nstd:float=2.0,risk:float=0.01):
         assert len(hist_price) > periods, "lenght(hist_price) must be equal or grather than periods"
         self.hist_price = hist_price[:periods] # solo nos interesa los últimos periodos
         self.periods = periods
         self.nstd = nstd
         self.risk = risk
-
-
         self.long_positions = Queue()
         self.short_positions = Queue()
         self.trades = []
-        super(BollingerBandsStrategy,self).__init__(MarketData) # supermonemos la clase padre
+        super(BollingerBandsStrategy,self).__init__(MarketData,Contract) # supermonemos la clase padre
 
     def update(self,price:float):
         trade = self.analyzeData(price)
@@ -69,15 +66,15 @@ class BollingerBandsStrategy(TradingStrategy):
         else:
             signal = 3
 
-        # if tp_short == False:
-        #     if price > upper_band:
-        #         if sl_short:
-        #             signal = -2
-        #         else:
-        #             if -1 not in self.trades[-3:]:
-        #                 signal = -1
-        # else:
-        #     signal = -3
+        if tp_short == False:
+            if price > upper_band:
+                if sl_short:
+                    signal = -2
+                else:
+                    if -1 not in self.trades[-3:]:
+                        signal = -1
+        else:
+            signal = -3
 
         return signal
 
